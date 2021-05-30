@@ -85,6 +85,7 @@ def joke():
     joke += random.choice(jokes)
     send(joke)
 def create_channel():
+    global channel_id
     value = False
     skip = False
     for users in channel_creators:
@@ -126,7 +127,7 @@ def create_channel():
                 'type': chan_type 
             })
             r = requests.post(url, headers=headers, data=parameters)
-            global channel_id
+            
             channel_id = r.json()['id']
             channel_creators.append({'Username': f"{username}","Channel_Name": f"{chan_name}","Channel_ID": f"{channel_id}"})
             file = open('record', 'wb')
@@ -337,6 +338,65 @@ def deals():
                     print(i)
     except Exception as i:
         print(i)
+def scheduleTime():
+    user,M,T,W = [],[],[],[]
+    user.append(username)
+    try:
+        file = open('schedules', 'rb')
+        currentScheds = pickle.load(file)
+        file.close()
+        currentUser = currentScheds[0][0]
+        print('current user is:',currentUser)
+        
+        print(currentScheds)
+    except:
+        print('no file found')
+    print(message_list[1])
+    if message_list[1] == 'delete':
+        delete = []
+        print('working')
+        file = open('schedules', 'wb')
+        pickle.dump(delete, file)
+        file.close()
+    else:
+        for message in message_list:
+            if message[0] == 'M':
+                time = message[2:11]
+                t1 = time[0:4]
+                t2 = time[5:9]
+                M.append(t1)
+                M.append(t2)
+                #print(M)
+            if message[0] == 'T':
+                time = message[2:11]
+                t1 = time[0:4]
+                t2 = time[5:9]
+                T.append(t1)
+                T.append(t2)
+            # print(T)
+            if message[0] == 'W':
+                time = message[2:11]
+                t1 = time[0:4]
+                t2 = time[5:9]
+                W.append(t1)
+                W.append(t2)
+                #print(W)
+        schedule = [user,M,T,W]
+        try:
+            currentScheds.append(schedule)
+            try:
+                file = open('schedules', 'wb')
+                pickle.dump(currentScheds, file)
+                file.close()
+            except:
+                print('File already created')
+        except:
+            file = open('schedules', 'wb')
+            pickle.dump(schedule, file)
+            file.close()
+        #print(schedule)
+    
+
 #heartbeart() sends required op code when the web server asks for it
 def heartbeat():
     
@@ -347,7 +407,7 @@ def heartbeat():
 #the functions dictionary below is used to reference the previous functions from the discord channel
 #the server will pull the first word after the '!' character and link it to its function through this dictionary.
 #To use, just change or add a key & value to your 'key word' and 'function name' and it should just work.
-functions = {'deal': deals, 'sale': sales, 'delete': delete_channel, 'create': create_channel,'jokes': joke, 'tronald': send_tron_dump, 'advice': advice, 'source': trump_source, 'help': ask_help}
+functions = {'schedule': scheduleTime, 'deal': deals, 'sale': sales, 'delete': delete_channel, 'create': create_channel,'jokes': joke, 'tronald': send_tron_dump, 'advice': advice, 'source': trump_source, 'help': ask_help}
 global stores
 #The following stores dictionary is used in conjunction with with the deals() function to reference the store id 
 #to the accompanied store.
@@ -388,7 +448,7 @@ async def SEND_CONTENT(uri):
                     username = greeting['d']['author']['username']
                     global last_sequence
                     last_sequence = greeting['s']
-                    jprint(greeting)
+                    #jprint(greeting)
                     #jprint(greeting)
                     
                     if message_content[0] == '!':
@@ -401,6 +461,7 @@ async def SEND_CONTENT(uri):
                         key_word += message_content
                         function_pick = functions.get(key_word)
                         try:
+                            send('hola')
                             function_pick()
                         except:
                             if message_list[0] == 'delete':
