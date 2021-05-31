@@ -174,7 +174,7 @@ def help_message():
     "content": f"**UNRECOGNISED COMMAND**:\n\n",
     "embed": {
         # "title": f"{line['internalName']}",
-        "description": "__**Commands:**__\n\n`!create [Channel name] [Channel type]`: Creates a channel\n\n`!delete [Channel name]`: Deletes your previously created channel\n\n`!advice`: Returns a random piece of advice\n\n`!deal [Top Price] [Return #] (opt)[nt - no thumbnail]`: Returns list of current video game deals\n\n`!sale [Game name] [Return #]`: Returns best prices for specified game\n\n`!tronald`: Returns random Donald Trump quote\n\n`!source`: Will display the source of the quote\n\n`!help`: Will bring up this message again",
+        "description": "__**Commands:**__\n\n`!create [Channel name] [Channel type]`: Creates a channel\n\n`!delete [Channel name]`: Deletes your previously created channel\n\n`!advice`: Returns a random piece of advice\n\n`!deal [Top Price] [Return #] (opt)[nt - no thumbnail]`: Returns list of current video game deals\n\n`!sale [Game name] [Return #]`: Returns best prices for first game\n\n`!tronald`: Returns random Donald Trump quote\n\n`!source`: Will display the source of the quote\n\n`!help`: Will bring up this message again",
         # "url": f'{link}',
         "color": 15158332,
         "image": {
@@ -183,13 +183,13 @@ def help_message():
     }
     }
     embed(HELP)
-    #send("**UNRECOGNISED COMMAND**:\n\nCommands:\n\n`!create [Channel name] [Channel type]`: Creates a channel\n\n`!delete [Channel name]`: Deletes your previously created channel\n\n`!advice`: Returns a random piece of advice\n\n`!deal [Top Price] [How many] (opt)[nt - no thumbnail]`: Returns list of current video game deals\n\n`!sale [Game name] [How many]`: Returns best prices for specified game\n\n`!tronald`: Returns random Donald Trump quote\n\n`!source`: Will display the source of the quote\n\n`!help`: Will bring up this message again")
+    #send("**UNRECOGNISED COMMAND**:\n\nCommands:\n\n`!create [Channel name] [Channel type]`: Creates a channel\n\n`!delete [Channel name]`: Deletes your previously created channel\n\n`!advice`: Returns a random piece of advice\n\n`!deal [Top Price] [How many] (opt)[nt - no thumbnail]`: Returns list of current video game deals\n\n`!sale [Game name] [How many]`: Returns best prices for first game\n\n`!tronald`: Returns random Donald Trump quote\n\n`!source`: Will display the source of the quote\n\n`!help`: Will bring up this message again")
 def ask_help():
     HELP = {
     "content": f"**HELP MENU**:\n\n",
     "embed": {
         # "title": f"{line['internalName']}",
-        "description": "__**Commands:**__\n\n`!create [Channel name] [Channel type]`: Creates a channel\n\n`!delete [Channel name]`: Deletes your previously created channel\n\n`!advice`: Returns a random piece of advice\n\n`!deal [Top Price] [Return #] (opt)[nt - no thumbnail]`: Returns list of current video game deals\n\n`!sale [Game name] [Return #]`: Returns best prices for specified game\n\n`!tronald`: Returns random Donald Trump quote\n\n`!source`: Will display the source of the quote\n\n`!help`: Will bring up this message again",
+        "description": "__**Commands:**__\n\n`!create [Channel name] [Channel type]`: Creates a channel\n\n`!delete [Channel name]`: Deletes your previously created channel\n\n`!advice`: Returns a random piece of advice\n\n`!deal [Top Price] [Return #] (opt)[nt - no thumbnail]`: Returns list of current video game deals\n\n`!sale [Game name] [Return #]`: Returns best prices for first game\n\n`!tronald`: Returns random Donald Trump quote\n\n`!source`: Will display the source of the quote\n\n`!help`: Will bring up this message again",
         # "url": f'{link}',
         "color": 15158332,
         "image": {
@@ -198,7 +198,7 @@ def ask_help():
     }
     }
     embed(HELP)
-    #send("**HELP MENU**:\n\nCommands:\n\n`!create [Channel name] [Channel type]`: Creates a channel\n\n`!delete [Channel name]`: Deletes your previously created channel\n\n`!advice`: Returns a random piece of advice\n\n`!deal [Top Price] [How many] (opt)[nt - no thumbnail]`: Returns list of current video game deals\n\n`!sale [Game name] [How many]`: Returns best prices for specified game\n\n`!tronald`: Returns random Donald Trump quote\n\n`!source`: Will display the source of the quote\n\n`!help`: Will bring up this message again")
+    #send("**HELP MENU**:\n\nCommands:\n\n`!create [Channel name] [Channel type]`: Creates a channel\n\n`!delete [Channel name]`: Deletes your previously created channel\n\n`!advice`: Returns a random piece of advice\n\n`!deal [Top Price] [How many] (opt)[nt - no thumbnail]`: Returns list of current video game deals\n\n`!sale [Game name] [How many]`: Returns best prices for first game\n\n`!tronald`: Returns random Donald Trump quote\n\n`!source`: Will display the source of the quote\n\n`!help`: Will bring up this message again")
 def sales():
     
     title = message_list[1]
@@ -341,60 +341,175 @@ def deals():
 def scheduleTime():
     user,M,T,W = [],[],[],[]
     user.append(username)
+    currentScheds = []
     try:
+    #if file exists, opens existing schedule inputs and saves them into currentScheds
+    #otherwise it creates the new file later on
         file = open('schedules', 'rb')
         currentScheds = pickle.load(file)
         file.close()
         currentUser = currentScheds[0][0]
         print('current user is:',currentUser)
         
-        print(currentScheds)
     except:
         print('no file found')
-    print(message_list[1])
+        file = open('schedules', 'rb')
+        currentScheds = pickle.load(file)
+        file.close()
     if message_list[1] == 'delete':
         delete = []
         print('working')
         file = open('schedules', 'wb')
         pickle.dump(delete, file)
         file.close()
+        send(f'Schedule deleted for {user}')
+    elif message_list[1] == 'show':
+        # user = user.replace('[','',1)
+        # user = user.replace(']','',1)
+        # user = user.replace("'","",2)
+        
+        
+        send(f'Current Schedules for {user}:\n')
+        
+        
+        for i in currentScheds:
+            
+            if i[0] == user:
+                days = -1
+                for times in i:
+                    try:
+                        days += 1
+                        timeConversion(times,days)
+                    except:
+                        pass
+            else:
+                print('No go')
+                continue
+
     else:
-        for message in message_list:
-            if message[0] == 'M':
-                time = message[2:11]
-                t1 = time[0:4]
-                t2 = time[5:9]
-                M.append(t1)
-                M.append(t2)
-                #print(M)
-            if message[0] == 'T':
-                time = message[2:11]
-                t1 = time[0:4]
-                t2 = time[5:9]
-                T.append(t1)
-                T.append(t2)
-            # print(T)
-            if message[0] == 'W':
-                time = message[2:11]
-                t1 = time[0:4]
-                t2 = time[5:9]
-                W.append(t1)
-                W.append(t2)
-                #print(W)
-        schedule = [user,M,T,W]
+        skip = False
         try:
-            currentScheds.append(schedule)
-            try:
-                file = open('schedules', 'wb')
-                pickle.dump(currentScheds, file)
-                file.close()
-            except:
-                print('File already created')
+            for users in currentScheds:
+                print('users are',users[0])
+                if users[0] == user:
+                    print('found')
+                    send('Schedule already exists for user, please delete and re-submit')
+                    skip = True
+                else:
+                    print('not found')
+                    skip = False
         except:
-            file = open('schedules', 'wb')
-            pickle.dump(schedule, file)
-            file.close()
-        #print(schedule)
+            print('No previous schedules found')
+        if skip:
+            print('Passed')
+            pass
+            
+        else:
+            try:
+                days = 0
+                for message in message_list:
+                    if message[0] == 'M':
+                        time = message[2:11]
+                        t1 = time[0:4]
+                        t2 = time[5:9]
+                        M.append(t1)
+                        M.append(t2)
+                        #print(M)
+                    if message[0] == 'T':
+                        time = message[2:11]
+                        t1 = time[0:4]
+                        t2 = time[5:9]
+                        T.append(t1)
+                        T.append(t2)
+                    # print(T)
+                    if message[0] == 'W':
+                        time = message[2:11]
+                        t1 = time[0:4]
+                        t2 = time[5:9]
+                        W.append(t1)
+                        W.append(t2)
+                        #print(W)
+                schedule = [user,M,T,W]
+                timeConversion(M,days)
+                timeConversion(T, days)
+                timeConversion(W, days)
+            except:
+                send('Wrong format')
+                
+                
+            try:
+                currentScheds.append(schedule)
+                
+                try:
+                    file = open('schedules', 'wb')
+                    pickle.dump(currentScheds, file)
+                    file.close()
+                    send('Schedule Recieved')
+                except:
+                    print('File already created')
+            except:
+                pass
+    
+    #print(schedule)
+def timeConversion(time,days):
+    firstTime = time[0]
+    secondTime = time[1]
+    convert(firstTime,secondTime,days)
+def convert(first,second,days):
+    #firstnumber
+    
+    if int(first) >= 1200:
+        PM = True
+    else:
+        PM = False
+    if int(first) >= 1300:
+        first = int(first) - 1200
+    else:
+        first = int(first)
+    
+    if first >= 1000:
+        first = str(first)
+        first = first[:2] + ':' + first[2:]
+        
+    else:
+        first = str(first)
+        first = first[:1] + ':' + first[1:]
+    if PM:
+        first += 'PM'
+    else:
+        first += 'AM'
+    #second number
+    if int(second) >= 1200:
+        PM = True
+    else:
+        PM = False
+    if int(second) >= 1300:
+        second = int(second) - 1200
+    else:
+        second = int(second)
+    
+    if second >= 1000:
+        second = str(second)
+        second = second[:2] + ':' + second[2:]
+        
+    else:
+        second = str(second)
+        second = second[:1] + ':' + second[1:]
+    if PM:
+        second += 'PM'
+    else:
+        second += 'AM'
+    
+    day = {1 : 'Monday: ', 2 : 'Tuesday: ', 3 : 'Wednesday: '}
+    try:
+        today = day.get(days)
+        time = today + first + '-' + second
+    except:
+        time = first + '-' + second
+    send(time)
+
+
+    
     
 
 #heartbeart() sends required op code when the web server asks for it
@@ -461,7 +576,7 @@ async def SEND_CONTENT(uri):
                         key_word += message_content
                         function_pick = functions.get(key_word)
                         try:
-                            send('hola')
+                            
                             function_pick()
                         except:
                             if message_list[0] == 'delete':
