@@ -93,7 +93,7 @@ def create_channel():
         if username == users['Username']:
             print(users['Username'])
             channel_name = users['Channel_Name']
-            send(f'Please delete {channel_name} before creating another one')
+            send(f"Please delete '{channel_name}' before creating another one")
             value = True
             pass
         else:
@@ -108,20 +108,14 @@ def create_channel():
             'voice': 2,
             'group': 3
         }
-        for chan_types in channel_types:
-            if message_list[2] == 'text' or message_list[2] == 'voice':
-                pass
-            else:
-                skip = True
-                pass
-        if skip == True:
+        if message_list[2] != 'text' and message_list[2] != 'voice':
             send('Please enter correct channel type(text OR voice')
             pass
         else:
             chan_type = channel_types.get(message_list[2])
             global chan_name
             chan_name = message_list[1]
-            url = f'https://discordapp.com/api/guilds/{channel_id}/channels'
+            url = f'https://discordapp.com/api/guilds/{server_id}/channels'
             parameters = json.dumps({
                 'name': chan_name,
                 'type': chan_type 
@@ -174,7 +168,7 @@ def help_message():
     "content": f"**UNRECOGNISED COMMAND**:\n\n",
     "embed": {
         # "title": f"{line['internalName']}",
-        "description": "__**Commands:**__\n\n`!create [Channel name] [Channel type]`: Creates a channel\n\n`!delete [Channel name]`: Deletes your previously created channel\n\n`!advice`: Returns a random piece of advice\n\n`!deal [Top Price] [Return #] (opt)[nt - no thumbnail]`: Returns list of current video game deals\n\n`!sale [Game name] [Return #]`: Returns best prices for first game\n\n`!tronald`: Returns random Donald Trump quote\n\n`!source`: Will display the source of the quote\n\n`!help`: Will bring up this message again",
+        "description": "__**Commands:**__\n\n`!create [Channel name] [Channel type]`: Creates a channel\n\n`!delete [Channel name]`: Deletes your previously created channel\n\n`!advice`: Returns a random piece of advice\n\n`!deal [Top Price] [Return #] (opt)[nt - no thumbnail]`: Returns list of current video game deals\n\n`!sale [Game name] [Return #]`: Returns best prices for first game\n\n`!tronald`: Returns random Donald Trump quote\n\n`!source`: Will display the source of the quote\n\n`!schedule format`:  Will display required schedule submission format\n\n`!schedule show`: Will show your input schedule\n\n`!schedule delete`: Will delete your schedule so you can input another one\n\n`!schedule compare`: Will compare all available schedules and output times that everyone is free\n\n`!help`: Will bring up this message again",
         # "url": f'{link}',
         "color": 15158332,
         "image": {
@@ -189,7 +183,7 @@ def ask_help():
     "content": f"**HELP MENU**:\n\n",
     "embed": {
         # "title": f"{line['internalName']}",
-        "description": "__**Commands:**__\n\n`!create [Channel name] [Channel type]`: Creates a channel\n\n`!delete [Channel name]`: Deletes your previously created channel\n\n`!advice`: Returns a random piece of advice\n\n`!deal [Top Price] [Return #] (opt)[nt - no thumbnail]`: Returns list of current video game deals\n\n`!sale [Game name] [Return #]`: Returns best prices for first game\n\n`!tronald`: Returns random Donald Trump quote\n\n`!source`: Will display the source of the quote\n\n`!help`: Will bring up this message again",
+        "description": "__**Commands:**__\n\n`!create [Channel name] [Channel type]`: Creates a channel\n\n`!delete [Channel name]`: Deletes your previously created channel\n\n`!advice`: Returns a random piece of advice\n\n`!deal [Top Price] [Return #] (opt)[nt - no thumbnail]`: Returns list of current video game deals\n\n`!sale [Game name] [Return #]`: Returns best prices for first game\n\n`!tronald`: Returns random Donald Trump quote\n\n`!source`: Will display the source of the quote\n\n`!schedule format`:  Will display required schedule submission format\n\n`!schedule show`: Will show your input schedule\n\n`!schedule delete`: Will delete your schedule so you can input another one\n\n`!schedule compare`: Will compare all available schedules and output times that everyone is free\n\n`!help`: Will bring up this message again",
         # "url": f'{link}',
         "color": 15158332,
         "image": {
@@ -339,53 +333,184 @@ def deals():
     except Exception as i:
         print(i)
 def scheduleTime():
-    user,M,T,W = [],[],[],[]
+    user,Sun,M,T,W,Thurs,F,S = [],[],[],[],[],[],[],[]
     user.append(username)
     currentScheds = []
-    try:
+    
     #if file exists, opens existing schedule inputs and saves them into currentScheds
     #otherwise it creates the new file later on
+    try:
         file = open('schedules', 'rb')
         currentScheds = pickle.load(file)
         file.close()
-        currentUser = currentScheds[0][0]
-        print('current user is:',currentUser)
+        
+        print('current user is:', username)
         
     except:
-        print('no file found')
-        file = open('schedules', 'rb')
-        currentScheds = pickle.load(file)
-        file.close()
-    if message_list[1] == 'delete':
-        delete = []
-        print('working')
-        file = open('schedules', 'wb')
-        pickle.dump(delete, file)
-        file.close()
-        send(f'Schedule deleted for {user}')
-    elif message_list[1] == 'show':
-        # user = user.replace('[','',1)
-        # user = user.replace(']','',1)
-        # user = user.replace("'","",2)
-        
-        
-        send(f'Current Schedules for {user}:\n')
-        
-        
-        for i in currentScheds:
+        print('no file found, creating...')
+       
+    if message_list[1] == 'deleteme':
+        x = 0
+        tempList = []
+        try:
             
-            if i[0] == user:
-                days = -1
-                for times in i:
+            for deleteUser in currentScheds:
+                deleteUser = str(deleteUser[0])
+                if message_list[2] == deleteUser:
+                    del currentScheds[x]
+                    deleteUser = deleteUser.replace("'","")
+                    deleteUser = deleteUser.replace("[","")
+                    deleteUser = deleteUser.replace("]","")
+                    send(f"{deleteUser}'s schedule was deleted")
+                else:
+
+                    x += 1
+        except:
+            x = 0
+            for users in currentScheds:
+                if users[0] == user:
+                    
+                    del currentScheds[x]
+                    send(f"{username}'s schedule was deleted")
+                else:
+                    x += 1
+                    continue
+        try:
+            file = open('schedules', 'wb')
+            pickle.dump(currentScheds, file)
+            file.close()
+        except:
+            pass
+    elif message_list[1] == 'deleteall':
+        currentScheds.clear()
+        file = open('schedules', 'wb')
+        pickle.dump(currentScheds, file)
+        file.close()
+        send('All schedules deleted')
+    elif message_list[1] == 'show':
+        users = username
+        try:
+            if message_list[2]:
+                users = message_list[2]
+                users = users.replace("'","")
+                users = users.replace("[","")
+                users = users.replace("]","")
+            
+        except:pass
+        send(f'Current Schedules for {users}:\n')
+        try:
+            
+            for users in currentScheds:
+                try:
                     try:
-                        days += 1
-                        timeConversion(times,days)
+                        
+                        if str(users[0]) == message_list[2]:
+                            days = -1
+                            for times in users:
+                                try:
+                                    days += 1
+                                    print(times)
+                                    timeConversion(times,days)
+                                except Exception as i:
+                                    if times == user:
+                                        print(i)
+                                        pass
+                                    else:
+                                        times = [ 0 , 0 ]
+                                        timeConversion(times, days)
+                        else:
+                            continue
                     except:
                         pass
-            else:
-                print('No go')
-                continue
-
+                        if users[0] == user:
+                            days = -1
+                            for times in users:
+                                try:
+                                    days += 1
+                                    print(times)
+                                    timeConversion(times,days)
+                                except Exception as i:
+                                    if times == user:
+                                        print(i)
+                                        pass
+                                    else:
+                                        times = [ 0 , 0 ]
+                                        timeConversion(times, days)
+                                        
+                        else:
+                            continue
+                    
+                except:
+                    noSched = {
+            "content": f"",
+            "embed": {
+                # "title": f"{line['internalName']}",
+                "description": f"No schedule found...",
+                # "url": f'{link}',
+                "color": 15158332,
+                "image": {
+                "url": f""
+                }
+            }
+            }
+                    embed(noSched)
+                    pass
+        except:
+            pass
+    elif message_list[1] == 'format':
+        schedsFormat = {
+            "content": f"**Schedule Format**:\n\n",
+            "embed": {
+                # "title": f"{line['internalName']}",
+                "description": f"!schedule\n\nSun:0000-0000\n\nM:0000-0000\n\nT:0000-0000\n\nW:0000-0000\n\nThurs:0000-0000\n\nF:0000-0000\n\nS:0000-0000",
+                # "url": f'{link}',
+                "color": 15158332,
+                "image": {
+                "url": f""
+                }
+            }
+            }
+        embed(schedsFormat)
+    elif message_list[1] == 'compare':
+        try:
+            fCount = -1
+            sCount = 0
+            fS, fM, fT, fW, fThur, fF, fSat = [], [], [], [], [], [], []
+            sS, sM, sT, sW, sThur, sF, sSat = [], [], [], [], [], [], []
+            fDayLists = {0 : fS, 1 :fM, 2 : fT, 3 : fW, 4 : fThur, 5 : fF, 6 : fSat}
+            sDayLists = {0 : sS, 1 :sM, 2 : sT, 3 : sW, 4 : sThur, 5 : sF, 6 : sSat}
+            for users in currentScheds:
+                fCount = -1
+                sCount = 0
+                for times in users:
+                    try:
+                        if fCount == -1:
+                            fCount += 1
+                            pass
+                        else:
+                            fDayList = fDayLists.get(fCount)
+                            sDayList = sDayLists.get(sCount)
+                            fDayList.append(times[0])
+                            sDayList.append(times[1])
+                            fCount += 1
+                            sCount += 1 
+                    except:
+                        print('No number found, passing')
+                        fDayList.append('N/A')
+                        sDayList.append('N/A')
+                        fCount += 1
+                        sCount += 1 
+                        pass
+                
+            timeConversion([max(fS),min(sS)], 1)
+            timeConversion([max(fM),min(sM)], 2)
+            timeConversion([max(fT),min(sT)], 3)
+            timeConversion([max(fW),min(sW)], 4)
+            timeConversion([max(fThur),min(sThur)], 5)
+            timeConversion([max(fF),min(sF)], 6)
+            timeConversion([max(fSat),min(sSat)], 7)
+        except:
+            send('No schedules found')
     else:
         skip = False
         try:
@@ -408,34 +533,77 @@ def scheduleTime():
             try:
                 days = 0
                 for message in message_list:
-                    if message[0] == 'M':
+                    
+                    #print(message)
+                    if message[:3] == 'Sun':
+                        time = message[4:13]
+                        t1 = time[0:4]
+                        t2 = time[5:9]
+                        Sun.append(t1)
+                        Sun.append(t2)
+                        #print(W)
+                    elif message[0] == 'M':
                         time = message[2:11]
                         t1 = time[0:4]
                         t2 = time[5:9]
                         M.append(t1)
                         M.append(t2)
                         #print(M)
-                    if message[0] == 'T':
+                    elif message[:5] == 'Thurs':
+                        time = message[6:15]
+                        t1 = time[0:4]
+                        t2 = time[5:9]
+                        Thurs.append(t1)
+                        Thurs.append(t2)
+                        #print(W)
+                    elif message[0] == 'T':
                         time = message[2:11]
                         t1 = time[0:4]
                         t2 = time[5:9]
                         T.append(t1)
                         T.append(t2)
-                    # print(T)
-                    if message[0] == 'W':
+                        #print(T)
+                    elif message[0] == 'W':
                         time = message[2:11]
                         t1 = time[0:4]
                         t2 = time[5:9]
                         W.append(t1)
                         W.append(t2)
                         #print(W)
-                schedule = [user,M,T,W]
-                timeConversion(M,days)
-                timeConversion(T, days)
-                timeConversion(W, days)
-            except:
+                    
+                    elif message[0] == 'F':
+                        time = message[2:11]
+                        t1 = time[0:4]
+                        t2 = time[5:9]
+                        F.append(t1)
+                        F.append(t2)
+                        #print(W)
+                    elif message[0] == 'S':
+                        time = message[2:11]
+                        t1 = time[0:4]
+                        t2 = time[5:9]
+                        S.append(t1)
+                        S.append(t2)
+                        #print(W)
+                    else:
+                        print('No time found')
+                    
+                schedule = [user,Sun,M,T,W,Thurs,F,S]
+                try:
+                    timeConversion(Sun, days)
+                    timeConversion(M, days)
+                    timeConversion(T, days)
+                    timeConversion(W, days)
+                    timeConversion(Thurs, days)
+                    timeConversion(F, days)
+                    timeConversion(S, days)
+                except Exception as i:
+                    print(i)
+                print('schedule: ',schedule)
+            except Exception as i:
+                print(i)
                 send('Wrong format')
-                
+                pass
                 
             try:
                 currentScheds.append(schedule)
@@ -452,64 +620,153 @@ def scheduleTime():
     
     #print(schedule)
 def timeConversion(time,days):
+    
     firstTime = time[0]
     secondTime = time[1]
+    print(firstTime, secondTime)
     convert(firstTime,secondTime,days)
 def convert(first,second,days):
     #firstnumber
-    
-    if int(first) >= 1200:
-        PM = True
-    else:
-        PM = False
-    if int(first) >= 1300:
-        first = int(first) - 1200
-    else:
-        first = int(first)
-    
-    if first >= 1000:
+    if first == '0000':
+        first = 1200
         first = str(first)
-        first = first[:2] + ':' + first[2:]
-        
-    else:
-        first = str(first)
-        first = first[:1] + ':' + first[1:]
-    if PM:
-        first += 'PM'
-    else:
-        first += 'AM'
-    #second number
-    if int(second) >= 1200:
-        PM = True
-    else:
-        PM = False
-    if int(second) >= 1300:
-        second = int(second) - 1200
-    else:
-        second = int(second)
+        first = first[:2] + ':' + first[2:] + 'AM'
+        pass
+    elif first == 0 or second == 0:
+        first = 'N/A'
+        second = 'N/A'
     
-    if second >= 1000:
-        second = str(second)
-        second = second[:2] + ':' + second[2:]
+    if message_list[1] == 'compare':
+        if first >= second:
+            first = 'No times available'
+            second = ''
+    try:
+        global time
+        if int(first) >= 1200:
+            PM = True
+        else:
+            PM = False
+        if int(first) >= 1300:
+            first = int(first) - 1200
+        else:
+            first = int(first)
         
-    else:
-        second = str(second)
-        second = second[:1] + ':' + second[1:]
-    if PM:
-        second += 'PM'
-    else:
-        second += 'AM'
+        if first >= 1000:
+            first = str(first)
+            first = first[:2] + ':' + first[2:]
+            
+        else:
+            first = str(first)
+            first = first[:1] + ':' + first[1:]
+        if PM:
+            first += 'PM'
+        else:
+            first += 'AM'
+    except:
+        print('Failed AM')
+        #second number
+    try:
+        if second == '0000':
+            second = 1200
+            second = str(first)
+            #second = first[:2] + ':' + first[2:] + 'AM'
+            pass
+        if int(second) >= 1200:
+            PM = True
+        else:
+            PM = False
+        if int(second) >= 1300:
+            second = int(second) - 1200
+        else:
+            second = int(second)
+        
+        if second >= 1000:
+            second = str(second)
+            second = second[:2] + ':' + second[2:]
+            
+        else:
+            second = str(second)
+            second = second[:1] + ':' + second[1:]
+        if PM:
+            second += 'PM'
+        else:
+            second += 'AM'
+    except Exception as i:
+        print(i)
+        pass
+        
     
-    day = {1 : 'Monday: ', 2 : 'Tuesday: ', 3 : 'Wednesday: '}
+    day = {1: 'Sunday: ', 2 : 'Monday: ', 3 : 'Tuesday: ', 4 : 'Wednesday: ', 5 : 'Thursday: ', 6 : 'Friday: ', 7 : 'Saturday: '}
     try:
         today = day.get(days)
         time = today + first + '-' + second
     except:
         time = first + '-' + second
-    send(time)
+    try:
+        if days == 1:
+            global scheduleShow
+            scheduleShow = []
+            scheduleShow.append(time)
+            
+            print('scheduleshow: ', scheduleShow)
+        else:
+            scheduleShow.append(time)
+            print('scheduleshow: ', scheduleShow)
+    except:
+        pass
+    try:
+        if days == 7:
+            scheduleDisplay = '\n\n'.join(scheduleShow)
+            print(scheduleDisplay)
+            if message_list[1] == 'show':
+                users = username
+                try:
+                    if message_list[2]:
+                        users = message_list[2]
+                        users = users.replace("'","")
+                        users = users.replace("[","")
+                        users = users.replace("]","")
+                    else:pass
+                except:pass
 
+                scheduleDisplayEmbeded = {
+        "content": f"**{users}'s FREE TIME**:\n\n",
+        "embed": {
+            # "title": f"{line['internalName']}",
+            "description": f"{scheduleDisplay}",
+            # "url": f'{link}',
+            "color": 15158332,
+            "image": {
+            "url": f""
+            }
+        }
+        }   
+            elif message_list[1] == 'compare':
+                scheduleDisplayEmbeded = {
+        "content": f"**Available times this week**:\n\n",
+        "embed": {
+            # "title": f"{line['internalName']}",
+            "description": f"{scheduleDisplay}",
+            # "url": f'{link}',
+            "color": 15158332,
+            "image": {
+            "url": f""
+            }
+        }
+        } 
+            embed(scheduleDisplayEmbeded)
+        else:
+            pass
+    except Exception as i:
+        print(i)
+        
+        send(time)
+    # try:
+    #     send(scheduleShow)
+    #     #print('Made it')
+    # except:
+    #     send(time)
 
-    
     
 
 #heartbeart() sends required op code when the web server asks for it
@@ -517,7 +774,7 @@ def heartbeat():
     
     return json.dumps({
         "op": 1,
-        "d": last_sequence
+        "d": last_sequence 
      })
 #the functions dictionary below is used to reference the previous functions from the discord channel
 #the server will pull the first word after the '!' character and link it to its function through this dictionary.
@@ -534,11 +791,16 @@ channel_creators = []
         
 #SEND_CONTENT() keeps a connection open to the discord server and listens for activity
 async def SEND_CONTENT(uri):
+    global username
+    global last_sequence
+    global message_list
+    global channel_creators
+    last_sequence = None
     async with ws.connect(uri) as websocket:
         
         await websocket.send(send_opResponse())
         timer = 40
-        global channel_creators
+        
         print('Starting server....')
         try:
             #The following will load the list of channel creators (if it exists)
@@ -559,15 +821,13 @@ async def SEND_CONTENT(uri):
                     
                     message_content = greeting['d']['content']
                     op_response = greeting['op']
-                    global username
+                    
                     username = greeting['d']['author']['username']
-                    global last_sequence
+                    
                     last_sequence = greeting['s']
-                    #jprint(greeting)
-                    #jprint(greeting)
                     
                     if message_content[0] == '!':
-                        global message_list
+                        
                         message_content = message_content.replace('!','')
                         message_list = message_content.split()
                         message_content = message_list[0]
@@ -578,7 +838,7 @@ async def SEND_CONTENT(uri):
                         try:
                             
                             function_pick()
-                        except:
+                        except Exception as i:
                             if message_list[0] == 'delete':
                                 send(f'Delete function can only delete channels you have created')
                                 pass
@@ -610,10 +870,7 @@ async def SEND_CONTENT(uri):
                     #print('Hearbeat sent')
                     timer = 40
                     continue
-                continue
-                  
-            
-            
+                continue         
 gateway = requests.get('https://discord.com/api/v8/gateway/bot', headers=headers)  
     
 asyncio.get_event_loop().run_until_complete(SEND_CONTENT(gateway.json()['url'] + "?v=8&encoding=json"))
