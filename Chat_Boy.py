@@ -666,7 +666,7 @@ def convert(first,second,days):
         print('Failed AM')
         #second number
     try:
-        if second == '0000':
+        if second == '0000' or second =='2400':
             second = 1200
             second = str(first)
             #second = first[:2] + ':' + first[2:] + 'AM'
